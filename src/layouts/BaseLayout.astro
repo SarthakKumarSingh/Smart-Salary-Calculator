@@ -17,10 +17,10 @@ const currentPath = Astro.url.pathname;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=4" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4" />
-    <link rel="shortcut icon" href="/favicon.ico?v=4" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=4" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=5" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=5" />
+    <link rel="shortcut icon" href="/favicon.ico?v=5" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=5" />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <meta name="apple-mobile-web-app-title" content="Smart Salary Calculator" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -425,6 +425,9 @@ const currentPath = Astro.url.pathname;
     text-decoration: none;
     color: var(--ink);
     transition: color var(--transition);
+  }
+  .brand svg {
+    stroke: var(--accent);
   }
   .brand:hover { color: var(--accent); }
 
