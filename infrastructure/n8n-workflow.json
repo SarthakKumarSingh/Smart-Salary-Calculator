@@ -1,0 +1,113 @@
+{
+  "name": "Tax Bracket Automated Update Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 1
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger (Monthly)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.irs.gov/newsroom/xml",
+        "options": {}
+      },
+      "name": "Fetch IRS XML Feed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simulate parsing RSS to find tax bracket updates\n// In production, this would use regex/NLP or an API to extract specific thresholds.\nreturn [{ json: { \"tax_year\": 2026, \"updated\": true } }];"
+      },
+      "name": "Parse Tax Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/repos/YOUR_ORG/PaycheckPilot/dispatches",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ={{ $env.GITHUB_PAT }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "trigger-tax-update-script"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Trigger GitHub Action",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Monthly)": {
+      "main": [
+        [
+          {
+            "node": "Fetch IRS XML Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch IRS XML Feed": {
+      "main": [
+        [
+          {
+            "node": "Parse Tax Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Tax Data": {
+      "main": [
+        [
+          {
+            "node": "Trigger GitHub Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "America/New_York",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true
+  }
+}

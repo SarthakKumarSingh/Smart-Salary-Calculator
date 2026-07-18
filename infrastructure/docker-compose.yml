@@ -1,0 +1,43 @@
+version: '3.8'
+
+volumes:
+  n8n_data:
+  caddy_data:
+  caddy_config:
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: paycheckpilot-n8n
+    restart: unless-stopped
+    environment:
+      - N8N_HOST=n8n.paycheckpilot.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n8n.paycheckpilot.com/
+      - GENERIC_TIMEZONE=America/New_York
+      # Add your GitHub PAT here via GCP Secret Manager in production
+      # - GITHUB_PAT=${GITHUB_PAT}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - n8n_net
+
+  caddy:
+    image: caddy:latest
+    container_name: paycheckpilot-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    command: caddy reverse-proxy --from https://n8n.paycheckpilot.com --to http://n8n:5678
+    networks:
+      - n8n_net
+
+networks:
+  n8n_net:
+    driver: bridge
