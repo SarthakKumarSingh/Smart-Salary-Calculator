@@ -6,6 +6,7 @@ const {
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
+const isPagesDev = Astro.url.hostname.includes('pages.dev');
 ---
 
 <!doctype html>
@@ -14,6 +15,22 @@ const currentPath = Astro.url.pathname;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    {isPagesDev && (
+      <>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="googlebot" content="noindex, nofollow" />
+      </>
+    )}
+    <script is:inline>
+      if (window.location.hostname.includes('pages.dev')) {
+        if (!document.querySelector('meta[name="robots"]')) {
+          var m = document.createElement('meta');
+          m.name = 'robots';
+          m.content = 'noindex, nofollow';
+          document.head.appendChild(m);
+        }
+      }
+    </script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
