@@ -1,2 +1,8 @@
-https://46f3d202.smart-salary-calculator.pages.dev/*
+https://smart-salary-calculator.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://*.smart-salary-calculator.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://www.smartsalarycalculator.com/*
   X-Robots-Tag: noindex
