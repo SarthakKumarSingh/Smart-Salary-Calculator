@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Comprehensive Guide to US Taxes | Smart Salary Calculator';
+const description = 'Learn how federal tax brackets, FICA (Social Security & Medicare), standard deductions, and state taxes affect your take-home pay.';
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="content-band article-layout">
+    <div class="tool-heading">
+      <p class="eyebrow">Education</p>
+      <h1>How Your Paycheck is Calculated</h1>
+      <p>Understanding the math behind your take-home pay.</p>
+    </div>
+
+    <article class="prose panel">
+      <h2>1. Gross Pay vs. Net Pay</h2>
+      <p>
+        <strong>Gross pay</strong> is the total amount of money you earn before any taxes or deductions are removed. If you are salaried, this is your annual salary divided by your number of pay periods. If you are hourly, it's your hourly rate multiplied by hours worked.
+      </p>
+      <p>
+        <strong>Net pay</strong> (or take-home pay) is what actually hits your bank account after all taxes and deductions are subtracted.
+      </p>
+
+      <h2>2. Pre-Tax Deductions</h2>
+      <p>Before any taxes are calculated, certain deductions are subtracted from your gross pay. Because they reduce your taxable income, they effectively save you money on taxes. Common pre-tax deductions include:</p>
+      <ul>
+        <li><strong>Retirement contributions:</strong> 401(k), 403(b), or traditional IRA contributions.</li>
+        <li><strong>Health insurance premiums:</strong> Medical, dental, and vision insurance paid through your employer.</li>
+        <li><strong>Health accounts:</strong> Health Savings Account (HSA) or Flexible Spending Account (FSA) contributions.</li>
+        <li><strong>Commuter benefits:</strong> Employer-sponsored transit or parking programs.</li>
+      </ul>
+
+      <h2>3. Federal Income Tax & Brackets</h2>
+      <p>The U.S. has a <strong>progressive</strong> federal income tax system. This means that as you earn more, your income is divided into "brackets," and you pay higher tax rates only on the income that falls into the higher brackets—not on your entire income.</p>
+      
+      <div class="callout callout-blue">
+        <strong>The Standard Deduction</strong><br/>
+        Before federal taxes are applied, the IRS allows you to subtract the standard deduction from your income. For 2026, it is:
+        <ul style="margin-top: 8px; margin-bottom: 0;">
+          <li><strong>$16,100</strong> for Single filers</li>
+          <li><strong>$32,200</strong> for Married filing jointly</li>
+          <li><strong>$24,150</strong> for Head of Household</li>
+        </ul>
+      </div>
+
+      <h2>4. FICA (Social Security and Medicare)</h2>
+      <p>FICA stands for the Federal Insurance Contributions Act. Unlike federal income tax, FICA is a flat tax on your wages.</p>
+      <ul>
+        <li><strong>Social Security (6.2%):</strong> Funds retirement and disability benefits. It is only levied on the first $184,500 of income (the 2026 wage base limit). Any income above this amount is exempt from Social Security tax.</li>
+        <li><strong>Medicare (1.45%):</strong> Funds healthcare for seniors. It is levied on <em>all</em> of your wages. Furthermore, there is an <strong>Additional Medicare Tax of 0.9%</strong> on earnings over $200,000 for single filers ($250,000 for married couples).</li>
+      </ul>
+
+      <h2>5. State and Local Taxes</h2>
+      <p>State taxes vary wildly depending on where you live:</p>
+      <ul>
+        <li><strong>No income tax:</strong> States like Texas, Florida, Nevada, and Washington levy no state tax on wages.</li>
+        <li><strong>Flat tax:</strong> States like Colorado, Illinois, and Pennsylvania apply a single, flat percentage to all taxable income.</li>
+        <li><strong>Progressive tax:</strong> States like California and New York use tax brackets similar to the federal system.</li>
+      </ul>
+      <p>Additionally, some cities and counties (like New York City, or many counties in Ohio, Indiana, and Maryland) levy their own local income taxes.</p>
+    </article>
+    
+    <div class="cta-box">
+      <h3>Ready to run the numbers?</h3>
+      <a href="/" class="guide-cta-button">
+        Use the Main Calculator
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .article-layout {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .prose {
+    padding: 32px 40px;
+    margin-top: 24px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    margin: 32px 0 16px;
+    color: var(--ink);
+  }
+
+  .prose h2:first-child {
+    margin-top: 0;
+  }
+
+  .prose p {
+    margin-bottom: 20px;
+  }
+
+  .prose ul {
+    margin-bottom: 24px;
+    padding-left: 24px;
+  }
+
+  .prose li {
+    margin-bottom: 8px;
+  }
+
+  .callout {
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin: 24px 0;
+    font-size: 0.95rem;
+  }
+
+  .callout-blue {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 4px solid #3b82f6;
+  }
+  :root.dark .callout-blue {
+    border-color: #60a5fa;
+  }
+
+  .cta-box {
+    margin-top: 48px;
+    padding: 32px;
+    background: var(--green-light);
+    border-radius: var(--radius);
+    text-align: center;
+    border: 1px solid var(--green);
+  }
+  .cta-box h3 {
+    color: var(--green-dark);
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+  }
+
+  .guide-cta-button {
+    background: var(--accent);
+    color: #fff;
+    padding: 16px 40px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  .guide-cta-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 600px) {
+    .prose { padding: 24px 20px; }
+  }
+</style>

@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { stateOptions } from '../data/states.js';
+
+const title = '2026 US State Income Tax Rates | Smart Salary Calculator';
+const description = 'Browse 2026 state income tax rates, brackets, and standard deductions for all 50 US states.';
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="state-page">
+    <div class="tool-heading">
+      <p class="eyebrow">Tax Directory</p>
+      <h1>2026 State Income Tax Rates</h1>
+      <p>Select a state to view a localized paycheck calculator and detailed tax rules.</p>
+    </div>
+
+    <!-- Filter input -->
+    <div class="filter-controls">
+      <input type="text" id="state-search" placeholder="Search states (e.g. Texas, NY)..." aria-label="Search states" />
+    </div>
+
+    <!-- No income tax states -->
+    <h2 class="section-title">States with no income tax</h2>
+    <div class="state-grid" id="grid-no-tax">
+      {stateOptions.filter(s => s.brackets.length === 0).map((state) => (
+        <a href={`/paycheck-calculator/${state.slug}`} class="state-link" data-name={state.name.toLowerCase()} data-abbr={state.abbr.toLowerCase()}>
+          <span>{state.name}</span>
+          <span class="badge badge-gray">No Tax</span>
+        </a>
+      ))}
+    </div>
+
+    <!-- Flat tax states -->
+    <h2 class="section-title">States with flat income tax</h2>
+    <div class="state-grid" id="grid-flat-tax">
+      {stateOptions.filter(s => s.brackets.length === 1).map((state) => (
+        <a href={`/paycheck-calculator/${state.slug}`} class="state-link" data-name={state.name.toLowerCase()} data-abbr={state.abbr.toLowerCase()}>
+          <span>{state.name}</span>
+          <span class="badge badge-blue">{(state.brackets[0][1] * 100).toFixed(2)}% Flat</span>
+        </a>
+      ))}
+    </div>
+
+    <!-- Progressive tax states -->
+    <h2 class="section-title">States with progressive income tax</h2>
+    <div class="state-grid" id="grid-prog-tax">
+      {stateOptions.filter(s => s.brackets.length > 1).map((state) => {
+        const topRate = state.brackets[state.brackets.length - 1][1];
+        return (
+          <a href={`/paycheck-calculator/${state.slug}`} class="state-link" data-name={state.name.toLowerCase()} data-abbr={state.abbr.toLowerCase()}>
+            <span>{state.name}</span>
+            <span class="badge badge-green">Up to {(topRate * 100).toFixed(2)}%</span>
+          </a>
+        );
+      })}
+    </div>
+
+  </section>
+</BaseLayout>
+
+<style>
+  .filter-controls {
+    margin-bottom: 32px;
+    max-width: 400px;
+  }
+  
+  #state-search {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    color: var(--ink);
+    transition: all var(--transition);
+  }
+
+  #state-search:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(26,122,85,0.12);
+  }
+
+  .section-title {
+    margin: 48px 0 16px;
+    font-size: 1.5rem;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .badge-gray {
+    background: var(--soft);
+    color: var(--muted);
+  }
+
+  .badge-blue {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+  }
+  :root.dark .badge-blue { color: #60a5fa; }
+
+  .badge-green {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+</style>
+
+<script>
+  const searchInput = document.getElementById('state-search');
+  const stateLinks = document.querySelectorAll('.state-link');
+  const sections = document.querySelectorAll('.section-title');
+  const grids = document.querySelectorAll('.state-grid');
+
+  searchInput?.addEventListener('input', (e) => {
+    const term = (e.target).value.toLowerCase();
+    
+    stateLinks.forEach(link => {
+      const name = link.getAttribute('data-name');
+      const abbr = link.getAttribute('data-abbr');
+      if (name?.includes(term) || abbr?.includes(term)) {
+        link.style.display = 'flex';
+      } else {
+        link.style.display = 'none';
+      }
+    });
+
+    // Hide empty sections
+    grids.forEach((grid, index) => {
+      const visibleLinks = grid.querySelectorAll('.state-link[style="display: flex;"], .state-link:not([style*="display: none"])');
+      if (visibleLinks.length === 0) {
+        sections[index].style.display = 'none';
+        grid.style.display = 'none';
+      } else {
+        sections[index].style.display = 'block';
+        grid.style.display = 'grid';
+      }
+    });
+  });
+</script>

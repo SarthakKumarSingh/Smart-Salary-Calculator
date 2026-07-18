@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Privacy Policy - Smart Salary Calculator';
+const description = 'Read our Privacy Policy to understand how Smart Salary Calculator protects your data and why we process your salary information locally in your browser.';
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="content-band" aria-labelledby="privacy-title">
+    <div class="tool-heading">
+      <p class="eyebrow">Privacy & Security</p>
+      <h1 id="privacy-title">Privacy Policy</h1>
+    </div>
+    
+    <div class="article-layout">
+      <div class="prose">
+        <p>Last updated: January 2026</p>
+        
+        <h2>1. Your Data Stays Yours</h2>
+        <p>Smart Salary Calculator was built with a fundamental principle: your financial data is private. <strong>We do not collect, transmit, or store your salary information.</strong> When you type your income into our calculator, the calculations are performed entirely locally within your web browser using JavaScript.</p>
+        
+        <div class="callout callout-green">
+          <strong>100% Client-Side Processing:</strong> Your gross salary, tax deductions, and selected state are never sent to our servers.
+        </div>
+
+        <h2>2. Local Storage (Cookies)</h2>
+        <p>We use your browser's `localStorage` to save your "Recent Calculations" history so you don't lose your work when you refresh the page. This data lives exclusively on your hard drive and is never uploaded to our servers. You can clear this data at any time by clicking the "Clear all" button in the history section.</p>
+
+        <h2>3. Third-Party Analytics & Ads</h2>
+        <p>To keep this tool free, we may partner with third-party advertising networks (like Google AdSense) and use analytics providers (like Google Analytics). These third parties may use cookies, web beacons, and similar technologies to collect standard internet log information (like your IP address) and visitor behavior information.</p>
+        <ul>
+          <li><strong>Google Analytics:</strong> We use Google Analytics to understand how visitors engage with our site. You can opt-out by installing the Google Analytics Opt-out Browser Add-on.</li>
+          <li><strong>Advertising:</strong> Third-party vendors use cookies to serve ads based on your prior visits to our website or other websites on the internet.</li>
+        </ul>
+
+        <h2>4. External Links</h2>
+        <p>Our website contains links to external sites (such as the IRS website). If you click on a third-party link, you will be directed to that site. We strongly advise you to review the Privacy Policy of every site you visit. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.</p>
+
+        <h2>5. Changes to this Policy</h2>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. You are advised to review this Privacy Policy periodically for any changes.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .article-layout {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .prose {
+    padding: 32px 40px;
+    margin-top: 24px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    background: var(--soft);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    margin: 32px 0 16px;
+    color: var(--ink);
+  }
+
+  .prose p {
+    margin-bottom: 20px;
+  }
+
+  .prose ul {
+    margin-bottom: 24px;
+    padding-left: 24px;
+  }
+
+  .prose li {
+    margin-bottom: 8px;
+  }
+
+  .callout {
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin: 24px 0;
+    font-size: 0.95rem;
+  }
+
+  .callout-green {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 4px solid #10b981;
+  }
+  
+  :root.dark .callout-green {
+    border-color: #34d399;
+  }
+  
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .prose { padding: 24px 20px; }
+  }
+</style>

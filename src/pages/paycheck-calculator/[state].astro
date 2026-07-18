@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PaycheckTool from '../../components/PaycheckTool.astro';
+import { states } from '../../data/states.js';
+
+export function getStaticPaths() {
+  return states.map((state) => ({
+    params: { state: state.slug },
+    props: { state },
+  }));
+}
+
+const { state } = Astro.props;
+const title = `${state.name} Paycheck Calculator 2026 - Estimate Take Home Pay`;
+const description = `Estimate your ${state.name} paycheck for 2026 after federal tax, FICA, deductions, and a ${state.name} state tax assumption.`;
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="state-page">
+    <p class="eyebrow">{state.name} take-home pay</p>
+    <h1>{state.name} Paycheck Calculator 2026</h1>
+    <p>Use this free calculator to estimate take-home pay in {state.name}. It starts with {state.name} selected, then applies 2026 federal income tax brackets, FICA withholding, paycheck deductions, and a transparent state tax assumption.</p>
+  </section>
+
+  <PaycheckTool defaultState={state.abbr} />
+
+  <div class="ad-slot" aria-hidden="true"></div>
+
+  <section class="content-band">
+    <p class="eyebrow">How the estimate works</p>
+    <h2>What affects a {state.name} paycheck?</h2>
+    <div class="article-grid">
+      <article class="content-card">
+        <h3>Federal withholding</h3>
+        <p>The calculator subtracts the 2026 standard deduction for your filing status, then applies progressive federal tax brackets to the estimated taxable income.</p>
+      </article>
+      <article class="content-card">
+        <h3>FICA payroll taxes</h3>
+        <p>Employee Social Security tax applies up to the 2026 wage base. Medicare tax applies to all covered wages, with an additional Medicare estimate for high earners.</p>
+      </article>
+      <article class="content-card">
+        <h3>{state.name} state tax</h3>
+        <p>{state.name} {state.note}. This is a planning estimate, so actual withholding can differ based on local tax, credits, payroll settings, and employer benefit rules.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="content-band">
+    <p class="eyebrow">Search paths</p>
+    <h2>Related paycheck calculators</h2>
+    <div class="state-grid">
+      {states.filter((item) => item.slug !== state.slug).slice(0, 12).map((item) => (
+        <a href={`/paycheck-calculator/${item.slug}/`}>
+          {item.name}
+          <span>{item.abbr}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

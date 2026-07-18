@@ -1,0 +1,948 @@
+---
+import { stateOptions } from '../data/states.js';
+
+const { defaultState = 'TX' } = Astro.props;
+const optionsJson = JSON.stringify(stateOptions);
+---
+
+<section class="tool-shell" id="calculator" aria-label="Salary Calculator">
+  <div class="calculator-heading" style="text-align: center; margin-bottom: 32px;">
+    <h2 style="font-size: 2rem; font-weight: 700; letter-spacing: -0.02em;">Calculate your take home salary</h2>
+  </div>
+  <div class="calculator-grid">
+    <form class="panel calculator-form" id="paycheck-form" autocomplete="off">
+      <!-- Row 1: Pay -->
+      <fieldset>
+        <legend>Income</legend>
+        <div class="field-row">
+          <label>
+            Gross pay
+            <input id="gross-pay" name="grossPay" type="number" min="0" step="100" value="85000" inputmode="decimal" />
+          </label>
+          <label>
+            Pay type
+            <select id="pay-type" name="payType">
+              <option value="salary">Annual salary</option>
+              <option value="hourly">Hourly wage</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-row hourly-fields" id="hourly-fields" hidden>
+          <label>
+            Hours per week
+            <input id="hours" name="hours" type="number" min="1" max="100" step="0.5" value="40" inputmode="decimal" />
+          </label>
+          <label>
+            Weeks per year
+            <input id="weeks" name="weeks" type="number" min="1" max="52" step="1" value="52" inputmode="numeric" />
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label>
+            Pay frequency
+            <select id="frequency" name="frequency">
+              <option value="26">Biweekly (26 paychecks)</option>
+              <option value="24">Semi-monthly (24)</option>
+              <option value="12">Monthly (12)</option>
+              <option value="52">Weekly (52)</option>
+            </select>
+          </label>
+          <label>
+            Filing status
+            <select id="filing-status" name="filingStatus">
+              <option value="single">Single</option>
+              <option value="married">Married filing jointly</option>
+              <option value="head">Head of household</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label>
+            State
+            <select id="state" name="state">
+              {stateOptions.map((state) => (
+                <option value={state.abbr} selected={state.abbr === defaultState}>{state.name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Number of allowances / dependents
+            <input id="allowances" name="allowances" type="number" min="0" max="20" step="1" value="0" inputmode="numeric" />
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Row 2: Pre-tax deductions -->
+      <fieldset>
+        <legend>Pre-tax deductions <small>(per paycheck)</small></legend>
+        <div class="field-row">
+          <label>
+            401(k) / 403(b)
+            <input id="pretax-401k" name="pretax401k" type="number" min="0" step="10" value="150" inputmode="decimal" />
+          </label>
+          <label>
+            Health insurance premium
+            <input id="pretax-health" name="pretaxHealth" type="number" min="0" step="10" value="0" inputmode="decimal" />
+          </label>
+        </div>
+        <div class="field-row">
+          <label>
+            HSA contribution
+            <input id="pretax-hsa" name="pretaxHSA" type="number" min="0" step="10" value="0" inputmode="decimal" />
+          </label>
+          <label>
+            FSA contribution
+            <input id="pretax-fsa" name="pretaxFSA" type="number" min="0" step="10" value="0" inputmode="decimal" />
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- 2026 Provisions -->
+      <fieldset>
+        <legend>2026 Tax Provisions</legend>
+        <div class="field-row">
+          <label>
+            Qualified Overtime/Tips (Annual)
+            <input id="qualified-tips" name="qualifiedTips" type="number" min="0" step="100" value="0" inputmode="decimal" />
+          </label>
+          <label style="display:flex; flex-direction:row; align-items:center; gap:8px; cursor:pointer;">
+            <input id="senior-deduction" type="checkbox" style="width:auto; min-height:auto; transform:scale(1.2);" />
+            Age 65 or older
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Row 3: Other -->
+      <fieldset>
+        <legend>Additional withholding <small>(per paycheck)</small></legend>
+        <div class="field-row">
+          <label>
+            Extra federal withholding
+            <input id="extra-federal" name="extraFederal" type="number" min="0" step="10" value="0" inputmode="decimal" />
+          </label>
+          <label>
+            Other post-tax deductions
+            <input id="posttax" name="posttax" type="number" min="0" step="10" value="0" inputmode="decimal" />
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" id="calc-submit-btn" class="btn-primary">Calculate</button>
+        <button type="reset" class="btn-ghost">Reset all</button>
+      </div>
+
+      <!-- Reverse calculation toggle -->
+      <div class="reverse-toggle">
+        <label class="toggle-label">
+          <input id="reverse-mode" type="checkbox" />
+          <span class="toggle-track"><span class="toggle-knob"></span></span>
+          Reverse calculation (net → gross)
+        </label>
+        <span class="toggle-hint">Enter your desired take-home pay and we'll calculate the gross salary needed.</span>
+      </div>
+    </form>
+
+    <dialog id="results-modal" class="panel results-card modal" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h3 id="modal-title" style="margin: 0; font-size: 1.25rem;">Estimated Net Pay</h3>
+        <button class="modal-close" id="close-modal" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-content">
+      <!-- Ad Placeholder (Appears on Calculate) -->
+      <div id="ad-container" class="panel" style="display: none; text-align: center; padding: 40px 20px; background: var(--soft); margin-bottom: 24px; border: 1px dashed var(--line);">
+        <p style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: bold;">Advertisement</p>
+        <div style="background: var(--line); height: 90px; max-width: 728px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+          <span style="color: var(--ink); opacity: 0.5;">[ Google AdSense / Network Ad Placeholder ]</span>
+        </div>
+      </div>
+
+      <div class="results-hero" style="border-top: none;">
+        <output id="net-pay" class="net-pay">$0</output>
+        <p id="pay-period-label" class="muted">per paycheck</p>
+      </div>
+
+      <!-- SVG Donut Chart -->
+      <div class="chart-container" id="chart-container">
+        <svg id="donut-chart" viewBox="0 0 200 200" class="donut-svg">
+          <circle cx="100" cy="100" r="80" fill="none" stroke="var(--line)" stroke-width="28"/>
+          <circle id="donut-federal" cx="100" cy="100" r="80" fill="none" stroke="#1C1B1A" stroke-width="28" stroke-dasharray="0 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <circle id="donut-social" cx="100" cy="100" r="80" fill="none" stroke="#4A4742" stroke-width="28" stroke-dasharray="0 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <circle id="donut-medicare" cx="100" cy="100" r="80" fill="none" stroke="#827C75" stroke-width="28" stroke-dasharray="0 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <circle id="donut-state" cx="100" cy="100" r="80" fill="none" stroke="#C8BFAF" stroke-width="28" stroke-dasharray="0 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <circle id="donut-net" cx="100" cy="100" r="80" fill="none" stroke="var(--accent)" stroke-width="28" stroke-dasharray="0 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+          <text x="100" y="95" text-anchor="middle" class="donut-center-label">Take Home</text>
+          <text id="donut-percent" x="100" y="118" text-anchor="middle" class="donut-center-value">0%</text>
+        </svg>
+        <div class="chart-legend">
+          <span class="legend-item"><i style="background:#1C1B1A"></i> Federal</span>
+          <span class="legend-item"><i style="background:#4A4742"></i> SS</span>
+          <span class="legend-item"><i style="background:#827C75"></i> Medicare</span>
+          <span class="legend-item"><i style="background:#C8BFAF"></i> State</span>
+          <span class="legend-item"><i style="background:var(--accent)"></i> Net</span>
+        </div>
+      </div>
+
+      <!-- Summary breakdown -->
+      <div class="summary-list">
+        <div><span>Gross annual pay</span><strong id="annual-gross">$0</strong></div>
+        <div><span>Pre-tax deductions</span><strong id="total-pretax">$0</strong></div>
+        <div class="indent"><span>Federal income tax</span><strong id="federal-tax">$0</strong></div>
+        <div class="indent"><span>Social Security (6.2%)</span><strong id="social-tax">$0</strong></div>
+        <div class="indent"><span>Medicare (1.45%)</span><strong id="medicare-tax">$0</strong></div>
+        <div class="indent"><span>State income tax</span><strong id="state-tax">$0</strong></div>
+        <div class="highlight"><span>Total taxes withheld</span><strong id="total-tax">$0</strong></div>
+        <div><span>Effective federal rate</span><strong id="eff-rate">0%</strong></div>
+        <div><span>Effective total rate</span><strong id="eff-total-rate">0%</strong></div>
+      </div>
+
+      <!-- Multi-period table -->
+      <details class="period-table-wrap">
+        <summary>View all pay periods</summary>
+        <table class="period-table" id="period-table">
+          <thead>
+            <tr><th>Period</th><th>Gross</th><th>Taxes</th><th>Net</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Annual</td><td id="p-annual-g">–</td><td id="p-annual-t">–</td><td id="p-annual-n">–</td></tr>
+            <tr><td>Monthly</td><td id="p-monthly-g">–</td><td id="p-monthly-t">–</td><td id="p-monthly-n">–</td></tr>
+            <tr><td>Biweekly</td><td id="p-biweekly-g">–</td><td id="p-biweekly-t">–</td><td id="p-biweekly-n">–</td></tr>
+            <tr><td>Weekly</td><td id="p-weekly-g">–</td><td id="p-weekly-t">–</td><td id="p-weekly-n">–</td></tr>
+            <tr><td>Daily</td><td id="p-daily-g">–</td><td id="p-daily-t">–</td><td id="p-daily-n">–</td></tr>
+          </tbody>
+        </table>
+      </details>
+
+      <p id="state-note" class="note"></p>
+      
+      <div style="margin-top: 24px; display: flex; justify-content: center;">
+        <button type="button" id="print-btn" class="btn-secondary modal-print-btn" aria-label="Print results">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print / Save Results
+        </button>
+      </div>
+      
+      </div> <!-- Closes modal-content -->
+    </dialog>
+  </div> <!-- Closes calculator-grid -->
+
+  <!-- Calculation History -->
+  <div class="history-section" id="history-section">
+    <div class="history-header">
+      <h3>Recent Calculations</h3>
+      <button type="button" id="clear-history" class="btn-ghost" style="font-size:0.8rem; min-height:32px; padding:0 12px;">Clear all</button>
+    </div>
+    <div id="history-list" class="history-list">
+      <p class="history-empty">No saved calculations yet. Your results will appear here automatically.</p>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ optionsJson }}>
+  const states = JSON.parse(optionsJson);
+  const byAbbr = Object.fromEntries(states.map((s) => [s.abbr, s]));
+
+  const standardDeductions = { single: 16100, married: 32200, head: 24150 };
+
+  const brackets = {
+    single: [
+      [12400, 0.10], [50400, 0.12], [105700, 0.22],
+      [201775, 0.24], [256225, 0.32], [640600, 0.35], [Infinity, 0.37],
+    ],
+    married: [
+      [24800, 0.10], [100800, 0.12], [211400, 0.22],
+      [403550, 0.24], [512450, 0.32], [768700, 0.35], [Infinity, 0.37],
+    ],
+    head: [
+      [17700, 0.10], [67450, 0.12], [105700, 0.22],
+      [201750, 0.24], [256200, 0.32], [640600, 0.35], [Infinity, 0.37],
+    ],
+  };
+
+  const form = document.getElementById('paycheck-form');
+  const payType = document.getElementById('pay-type');
+  const hourlyFields = document.getElementById('hourly-fields');
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const pct = (v) => (v * 100).toFixed(1) + '%';
+  const money = (v) => fmt.format(Math.max(0, Number.isFinite(v) ? v : 0));
+  const nv = (id) => Number(document.getElementById(id).value || 0);
+  const CIRC = 2 * Math.PI * 80; // ~502.65
+
+  function progressiveTax(income, brkts) {
+    let tax = 0, last = 0;
+    for (const [limit, rate] of brkts) {
+      if (income <= last) break;
+      tax += (Math.min(income, limit) - last) * rate;
+      last = limit;
+    }
+    return tax;
+  }
+
+  function updateDonut(fedPct, ssPct, medPct, statePct, netPct) {
+    let offset = 0;
+    const segments = [
+      ['donut-federal', fedPct],
+      ['donut-social', ssPct],
+      ['donut-medicare', medPct],
+      ['donut-state', statePct],
+      ['donut-net', netPct],
+    ];
+    for (const [id, p] of segments) {
+      const len = p * CIRC;
+      const el = document.getElementById(id);
+      el.style.transition = 'stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease';
+      el.setAttribute('stroke-dasharray', `${len} ${CIRC - len}`);
+      el.setAttribute('stroke-dashoffset', `${-offset}`);
+      offset += len;
+    }
+    document.getElementById('donut-percent').textContent = (netPct * 100).toFixed(0) + '%';
+  }
+
+  function calculate() {
+    const frequency = nv('frequency');
+    const status = document.getElementById('filing-status').value;
+    const sel = byAbbr[document.getElementById('state').value] || byAbbr.TX;
+
+    // Pre-tax deductions (per paycheck → annual)
+    const pretax401k = nv('pretax-401k') * frequency;
+    const pretaxHealth = nv('pretax-health') * frequency;
+    const pretaxHSA = nv('pretax-hsa') * frequency;
+    const pretaxFSA = nv('pretax-fsa') * frequency;
+    const pretaxTotal = pretax401k + pretaxHealth + pretaxHSA + pretaxFSA;
+
+    const posttaxAnnual = nv('posttax') * frequency;
+    const extraFederalAnnual = nv('extra-federal') * frequency;
+
+    const grossAnnual = payType.value === 'hourly'
+      ? nv('gross-pay') * nv('hours') * nv('weeks')
+      : nv('gross-pay');
+
+    const wageAfterPretax = Math.max(0, grossAnnual - pretaxTotal);
+
+    // 2026 Overhaul Deductions
+    let seniorDed = 0;
+    if (document.getElementById('senior-deduction').checked) {
+      if (status === 'single' || status === 'head') {
+        seniorDed = wageAfterPretax <= 75000 ? 6000 : 0;
+      } else if (status === 'married') {
+        seniorDed = wageAfterPretax <= 150000 ? 12000 : 0;
+      }
+    }
+
+    let tipsInput = nv('qualified-tips');
+    let tipsDed = 0;
+    if (status === 'single' || status === 'head') {
+      if (wageAfterPretax <= 150000) {
+        tipsDed = Math.min(tipsInput, 12500);
+      }
+    } else if (status === 'married') {
+      if (wageAfterPretax <= 300000) {
+        tipsDed = Math.min(tipsInput, 25000);
+      }
+    }
+    const totalNewDeductions = seniorDed + tipsDed;
+
+    // Federal
+    const taxableFederal = Math.max(0, wageAfterPretax - standardDeductions[status] - totalNewDeductions);
+    const federal = progressiveTax(taxableFederal, brackets[status]) + extraFederalAnnual;
+
+    // FICA
+    const social = Math.min(wageAfterPretax, 184500) * 0.062;
+    const medicareLimit = status === 'married' ? 250000 : 200000;
+    const medicare = wageAfterPretax * 0.0145 + Math.max(0, wageAfterPretax - medicareLimit) * 0.009;
+
+    // State — use progressive brackets if available
+    let stateTax = 0;
+    if (sel.brackets && sel.brackets.length > 0) {
+      const stateDeduction = sel.stdDeduction || 0;
+      const taxableState = Math.max(0, wageAfterPretax - stateDeduction);
+      stateTax = progressiveTax(taxableState, sel.brackets);
+    }
+
+    const totalTax = federal + social + medicare + stateTax;
+    const netAnnual = Math.max(0, grossAnnual - pretaxTotal - posttaxAnnual - totalTax);
+
+    // Update displays
+    document.getElementById('net-pay').textContent = money(netAnnual / frequency);
+    document.getElementById('annual-gross').textContent = money(grossAnnual);
+    document.getElementById('total-pretax').textContent = money(pretaxTotal);
+    document.getElementById('federal-tax').textContent = money(federal);
+    document.getElementById('social-tax').textContent = money(social);
+    document.getElementById('medicare-tax').textContent = money(medicare);
+    document.getElementById('state-tax').textContent = money(stateTax);
+    document.getElementById('total-tax').textContent = money(totalTax);
+
+    // Effective rates
+    const effFed = grossAnnual > 0 ? federal / grossAnnual : 0;
+    const effTotal = grossAnnual > 0 ? totalTax / grossAnnual : 0;
+    document.getElementById('eff-rate').textContent = pct(effFed);
+    document.getElementById('eff-total-rate').textContent = pct(effTotal);
+
+    // Donut chart
+    if (grossAnnual > 0) {
+      updateDonut(
+        federal / grossAnnual,
+        social / grossAnnual,
+        medicare / grossAnnual,
+        stateTax / grossAnnual,
+        netAnnual / grossAnnual
+      );
+    }
+
+    // Multi-period table
+    const periods = { annual: 1, monthly: 12, biweekly: 26, weekly: 52, daily: 260 };
+    for (const [period, divisor] of Object.entries(periods)) {
+      document.getElementById(`p-${period}-g`).textContent = money(grossAnnual / divisor);
+      document.getElementById(`p-${period}-t`).textContent = money(totalTax / divisor);
+      document.getElementById(`p-${period}-n`).textContent = money(netAnnual / divisor);
+    }
+
+    // State note
+    const localNote = sel.hasLocalTax ? ' Additional local/city taxes may apply.' : '';
+    document.getElementById('state-note').textContent =
+      `${sel.name} ${sel.note}.${localNote} W-4 elections, bonuses, and benefit rules can change your real paycheck.`;
+  }
+
+  // Event listeners
+  payType.addEventListener('change', () => {
+    hourlyFields.hidden = payType.value !== 'hourly';
+    calculate();
+  });
+
+  // Show modal on submit
+  const resultsModal = document.getElementById('results-modal');
+  const adContainer = document.getElementById('ad-container');
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (adContainer) adContainer.style.display = 'block';
+    calculate();
+    resultsModal.showModal();
+  });
+
+  document.getElementById('close-modal').addEventListener('click', () => {
+    resultsModal.close();
+  });
+
+  resultsModal.addEventListener('click', (e) => {
+    const rect = resultsModal.getBoundingClientRect();
+    const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+      rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+    if (!isInDialog) {
+      resultsModal.close();
+    }
+  });
+
+  document.getElementById('print-btn')?.addEventListener('click', () => window.print());
+
+  // ─── Reverse Calculation (net → gross) ───
+  const reverseToggle = document.getElementById('reverse-mode');
+  const grossInput = document.getElementById('gross-pay');
+  const grossLabel = grossInput.closest('label');
+
+  reverseToggle.addEventListener('change', () => {
+    const isReverse = reverseToggle.checked;
+    grossLabel.childNodes[0].textContent = isReverse ? 'Desired net pay' : 'Gross pay';
+    document.querySelector('.results-hero .eyebrow').textContent = isReverse ? 'Required gross salary' : 'Estimated net pay';
+    if (isReverse) {
+      reverseCalculate();
+    } else {
+      calculate();
+    }
+  });
+
+  function reverseCalculate() {
+    const desiredNet = nv('gross-pay');
+    if (desiredNet <= 0) return;
+    // Binary search for the gross that produces the desired net
+    let lo = desiredNet, hi = desiredNet * 3, mid, netResult;
+    for (let i = 0; i < 50; i++) {
+      mid = (lo + hi) / 2;
+      netResult = computeNetFromGross(mid);
+      if (Math.abs(netResult - desiredNet) < 1) break;
+      if (netResult < desiredNet) lo = mid;
+      else hi = mid;
+    }
+    // Display the required gross
+    document.getElementById('net-pay').textContent = money(mid / nv('frequency'));
+    document.getElementById('annual-gross').textContent = money(mid);
+  }
+
+  function computeNetFromGross(grossAnnual) {
+    const frequency = nv('frequency');
+    const status = document.getElementById('filing-status').value;
+    const sel = byAbbr[document.getElementById('state').value] || byAbbr.TX;
+    const pretax401k = nv('pretax-401k') * frequency;
+    const pretaxHealth = nv('pretax-health') * frequency;
+    const pretaxHSA = nv('pretax-hsa') * frequency;
+    const pretaxFSA = nv('pretax-fsa') * frequency;
+    const pretaxTotal = pretax401k + pretaxHealth + pretaxHSA + pretaxFSA;
+    const posttaxAnnual = nv('posttax') * frequency;
+    const extraFederalAnnual = nv('extra-federal') * frequency;
+    const wageAfterPretax = Math.max(0, grossAnnual - pretaxTotal);
+    const taxableFederal = Math.max(0, wageAfterPretax - standardDeductions[status]);
+    const federal = progressiveTax(taxableFederal, brackets[status]) + extraFederalAnnual;
+    const social = Math.min(wageAfterPretax, 184500) * 0.062;
+    const medicareLimit = status === 'married' ? 250000 : 200000;
+    const medicare = wageAfterPretax * 0.0145 + Math.max(0, wageAfterPretax - medicareLimit) * 0.009;
+    let stateTax = 0;
+    if (sel.brackets && sel.brackets.length > 0) {
+      const stateDeduction = sel.stdDeduction || 0;
+      const taxableState = Math.max(0, wageAfterPretax - stateDeduction);
+      stateTax = progressiveTax(taxableState, sel.brackets);
+    }
+    const totalTax = federal + social + medicare + stateTax;
+    return Math.max(0, grossAnnual - pretaxTotal - posttaxAnnual - totalTax);
+  }
+
+  // Override calculate to also handle reverse mode
+  const origCalc = calculate;
+  form.removeEventListener('input', calculate);
+  form.removeEventListener('change', calculate);
+  form.addEventListener('input', () => reverseToggle.checked ? reverseCalculate() : origCalc());
+  form.addEventListener('change', () => reverseToggle.checked ? reverseCalculate() : origCalc());
+
+  // ─── Calculation History (localStorage) ───
+  const HISTORY_KEY = 'smart_salary_calculator_history';
+  const MAX_HISTORY = 5;
+
+  function getHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveToHistory() {
+    if (reverseToggle.checked) return; // Don't save reverse calcs
+    const gross = nv('gross-pay');
+    if (gross <= 0) return;
+    const state = document.getElementById('state').value;
+    const status = document.getElementById('filing-status').value;
+    const net = document.getElementById('net-pay').textContent;
+    const totalTax = document.getElementById('total-tax').textContent;
+    const entry = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      gross: money(gross),
+      state,
+      status,
+      net,
+      tax: totalTax,
+    };
+    const history = getHistory();
+    // Don't save duplicate of last entry
+    if (history.length > 0 && history[0].gross === entry.gross && history[0].state === entry.state) return;
+    history.unshift(entry);
+    if (history.length > MAX_HISTORY) history.pop();
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('history-list');
+    const history = getHistory();
+    if (history.length === 0) {
+      list.innerHTML = '<p class="history-empty">No saved calculations yet. Your results will appear here automatically.</p>';
+      return;
+    }
+    list.innerHTML = `<table class="history-table">
+      <thead><tr><th>Date</th><th>Gross</th><th>State</th><th>Filing</th><th>Taxes</th><th>Net/check</th><th></th></tr></thead>
+      <tbody>${history.map(h => `<tr>
+        <td>${h.date}</td><td>${h.gross}</td><td>${h.state}</td>
+        <td style="text-transform:capitalize">${h.status}</td><td>${h.tax}</td><td><strong>${h.net}</strong></td>
+        <td><button class="history-del" data-id="${h.id}" title="Remove">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+    list.querySelectorAll('.history-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.dataset.id);
+        const filtered = getHistory().filter(h => h.id !== id);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered));
+        renderHistory();
+      });
+    });
+  }
+
+  // Save after user stops interacting for 1.5s
+  let saveTimer;
+  form.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveToHistory, 1500);
+  });
+
+  document.getElementById('clear-history')?.addEventListener('click', () => {
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+  });
+
+  // Initial render
+  renderHistory();
+  calculate();
+</script>
+
+<style>
+  .tool-shell fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 18px;
+  }
+  .tool-shell legend {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 12px;
+    padding: 0;
+  }
+  .tool-shell legend small {
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  input, select, button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    background: var(--accent);
+    color: #FFFFFF;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+  .btn-secondary, .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--soft);
+    color: var(--ink);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover, .btn-ghost:hover {
+    background: var(--ink);
+    color: var(--panel);
+    border-color: var(--ink);
+  }
+  .btn-ghost {
+    background: transparent;
+  }
+
+  /* Results */
+  .results-hero {
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+
+  /* Donut chart */
+  .chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 16px 0;
+  }
+  .donut-svg {
+    width: 180px;
+    height: 180px;
+  }
+  .donut-center-label {
+    font-size: 11px;
+    fill: var(--muted);
+    font-weight: 600;
+  }
+  .donut-center-value {
+    font-size: 26px;
+    fill: var(--ink);
+    font-weight: 850;
+  }
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .legend-item i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  /* Summary */
+  .summary-list .indent span::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+  }
+  .summary-list .highlight {
+    background: var(--soft);
+    border-radius: 6px;
+    padding: 10px 12px !important;
+    border: none !important;
+    font-size: 1.02rem;
+  }
+
+  /* Period table */
+  .period-table-wrap {
+    margin-top: 16px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .period-table-wrap summary {
+    cursor: pointer;
+    font-weight: 750;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+  .period-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.88rem;
+  }
+  .period-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .period-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .period-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  @media print {
+    .form-actions, .site-header, .site-footer, .tool-heading .eyebrow, .reverse-toggle, .history-section,
+    .calculator-form, .hero, .trust-row, .modal-close, .modal-print-btn, #ad-container {
+      display: none !important;
+    }
+    .calculator-grid {
+      grid-template-columns: 1fr !important;
+      display: block !important;
+    }
+    .modal {
+      position: relative !important;
+      display: block !important;
+      border: none !important;
+      box-shadow: none !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .modal-content {
+      max-height: none !important;
+      overflow: visible !important;
+    }
+    .modal::backdrop {
+      display: none !important;
+    }
+    .results-card {
+      position: static !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+
+  /* ─── Reverse Toggle ─── */
+  .reverse-toggle {
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 750;
+    cursor: pointer;
+    margin-bottom: 4px;
+  }
+  .toggle-label input {
+    display: none;
+  }
+  .toggle-track {
+    width: 40px;
+    height: 24px;
+    background: var(--line);
+    border-radius: 12px;
+    position: relative;
+    transition: 0.3s;
+  }
+  .toggle-knob {
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-label input:checked + .toggle-track {
+    background: var(--ink);
+  }
+  .toggle-label input:checked + .toggle-track .toggle-knob {
+    left: 19px;
+  }
+  .toggle-hint {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-left: 52px;
+    display: block;
+  }
+
+  /* ─── Modal Pop-up ─── */
+  .modal {
+    margin: auto;
+    max-width: 600px;
+    width: 95%;
+    border-radius: 16px;
+    padding: 0;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  .modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--soft);
+  }
+  .modal-content {
+    padding: 24px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+    padding: 0 8px;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--ink); }
+
+  /* ─── History Section ─── */
+  .history-section {
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+  }
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .history-header h3 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+  .history-list {
+    overflow-x: auto;
+  }
+  :global(.history-table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    min-width: 600px;
+    table-layout: fixed;
+  }
+  :global(.history-table th) {
+    text-align: left;
+    padding: 12px;
+    background: var(--soft);
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 2px solid var(--line);
+  }
+  :global(.history-table td) {
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  :global(.history-table th:last-child),
+  :global(.history-table td:last-child) {
+    width: 48px;
+    text-align: center;
+  }
+  :global(.history-empty) {
+    padding: 24px;
+    background: var(--soft);
+    color: var(--muted);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  :global(.history-del) {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    min-height: auto;
+    min-width: auto;
+    transition: color 0.2s;
+  }
+  :global(.history-del:hover) {
+    color: var(--accent);
+  }
+</style>

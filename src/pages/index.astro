@@ -1,11 +1,410 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PaycheckTool from '../components/PaycheckTool.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = 'Smart Salary Calculator - 2026 US Take Home Pay Calculator';
+const description = 'Free 2026 US paycheck calculator. Estimate take-home pay after federal, FICA, state taxes & deductions for all 50 states.';
+
+const faqs = [
+  {
+    name: "How much is taken out of a paycheck for taxes?",
+    text: "<p>It depends on your income, filing status, and state. Typically, expect 15% to 30% of your gross pay to be withheld for Federal, FICA, and State taxes.</p>"
+  },
+  {
+    name: "What is FICA tax and why is it deducted?",
+    text: "<p>FICA consists of Social Security (6.2%) and Medicare (1.45%). These are mandatory federal payroll taxes that fund retirement and healthcare programs.</p>"
+  },
+  {
+    name: "How can I increase my take-home pay?",
+    text: "<p>You can adjust your W-4 withholdings to match your actual tax liability, or reduce pre-tax deductions (though this increases your taxable income).</p>"
+  },
+  {
+    name: "Do all states have an income tax?",
+    text: "<p>No. Nine states currently have no state income tax on wages: Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington, and Wyoming.</p>"
+  },
+  {
+    name: "What is the standard deduction?",
+    text: "<p>The standard deduction reduces your taxable income. For 2026, it is $16,100 for Single filers and $32,200 for Married Filing Jointly.</p>"
+  }
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.name,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.text
+    }
+  }))
+};
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <Fragment slot="head" set:html={`<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`} />
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Free US Take Home Salary Calculator</p>
+        <h1>2026 Salary Calculator: Hourly to Annual Pay</h1>
+        <p>Estimate your net salary and true take-home pay with our highly accurate yearly and monthly salary calculator. Easily calculate an hourly to salary conversion, factoring in 2026 federal brackets, FICA, and precise state tax calculations for California, Texas, Florida, NYC, and more.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Embedded Calculator Widget directly above the fold -->
+  <PaycheckTool />
+
+  <section class="trust-row" aria-label="Calculator highlights">
+    <div><strong>2026 federal brackets</strong><span>Uses IRS tax year 2026 thresholds and standard deductions.</span></div>
+    <div><strong>FICA & State taxes</strong><span>Accurate progressive tax brackets for all 50 states.</span></div>
+    <div><strong>Pre & Post-tax deductions</strong><span>Support for 401(k), HSA, FSA, and health insurance.</span></div>
+  </section>
+
+  <section class="content-band">
+    <div class="hero-inner">
+      <div class="table-container">
+        <h2>2026 Federal Income Tax Brackets & Standard Deductions</h2>
+        <p>The calculation above strictly applies the progressive brackets below based on your selected filing status.</p>
+        
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Tax Rate</th>
+                <th>Single Filers</th>
+                <th>Married Filing Jointly</th>
+                <th>Head of Household</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>10%</strong></td>
+                <td>$0 to $12,400</td>
+                <td>$0 to $24,800</td>
+                <td>$0 to $17,700</td>
+              </tr>
+              <tr>
+                <td><strong>12%</strong></td>
+                <td>$12,400 to $50,400</td>
+                <td>$24,800 to $100,800</td>
+                <td>$17,700 to $67,450</td>
+              </tr>
+              <tr>
+                <td><strong>22%</strong></td>
+                <td>$50,400 to $105,700</td>
+                <td>$100,800 to $211,400</td>
+                <td>$67,450 to $105,700</td>
+              </tr>
+              <tr>
+                <td><strong>24%</strong></td>
+                <td>$105,700 to $201,775</td>
+                <td>$211,400 to $403,550</td>
+                <td>$105,700 to $201,775</td>
+              </tr>
+              <tr>
+                <td><strong>32%</strong></td>
+                <td>$201,775 to $256,225</td>
+                <td>$403,550 to $512,450</td>
+                <td>$201,775 to $256,200</td>
+              </tr>
+              <tr>
+                <td><strong>35%</strong></td>
+                <td>$256,225 to $640,600</td>
+                <td>$512,450 to $768,700</td>
+                <td>$256,200 to $640,600</td>
+              </tr>
+              <tr>
+                <td><strong>37%</strong></td>
+                <td>$640,600 or more</td>
+                <td>$768,700 or more</td>
+                <td>$640,600 or more</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-wrapper" style="margin-top: 24px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Standard Deduction</th>
+                <th>Amount (2026)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Single / Married Filing Separately</strong></td>
+                <td>$16,100</td>
+              </tr>
+              <tr>
+                <td><strong>Married Filing Jointly</strong></td>
+                <td>$32,200</td>
+              </tr>
+              <tr>
+                <td><strong>Head of Household</strong></td>
+                <td>$24,150</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-band alt-bg">
+    <div class="hero-inner">
+      <div class="guide-header">
+        <p class="eyebrow">Definitive Guide</p>
+        <h2>Understanding Your Take-Home Pay</h2>
+        <p>A comprehensive breakdown of how gross pay becomes net pay.</p>
+      </div>
+
+      <!-- 1. How It Works: 3-step grid -->
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Start with Gross Pay</h3>
+          <p>This is your total earnings before any deductions. For salaried employees, it's your annual salary divided by pay periods.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Subtract Deductions & Taxes</h3>
+          <p>Pre-tax deductions (like 401k) lower your taxable income. Then, Federal, FICA, and State taxes are calculated and removed.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Get Your Net Pay</h3>
+          <p>After post-tax deductions, the remaining amount is your net take-home pay that hits your bank account.</p>
+        </div>
+      </div>
+
+      <!-- 2. Glossary -->
+      <div class="glossary-section">
+        <h3>Glossary of Terms</h3>
+        <div class="glossary-grid">
+          <div>
+            <strong>Gross Pay</strong>
+            <p>Total money earned before taxes and deductions.</p>
+          </div>
+          <div>
+            <strong>Net Pay</strong>
+            <p>Your actual take-home pay after all withholdings.</p>
+          </div>
+          <div>
+            <strong>FICA</strong>
+            <p>Federal Insurance Contributions Act (Social Security & Medicare).</p>
+          </div>
+          <div>
+            <strong>Pre-tax Deductions</strong>
+            <p>Money taken out before taxes, lowering your tax burden.</p>
+          </div>
+          <div>
+            <strong>Post-tax Deductions</strong>
+            <p>Money taken out after taxes (e.g., union dues, Roth IRA).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. FAQ Accordion -->
+      <div class="faq-section">
+        <h3>Frequently Asked Questions</h3>
+        <div class="faq">
+          <details>
+            <summary>How much is taken out of a paycheck for taxes?</summary>
+            <p>It depends on your income, filing status, and state. Typically, expect 15% to 30% of your gross pay to be withheld for Federal, FICA, and State taxes.</p>
+          </details>
+          <details>
+            <summary>What is FICA tax and why is it deducted?</summary>
+            <p>FICA consists of Social Security (6.2%) and Medicare (1.45%). These are mandatory federal payroll taxes that fund retirement and healthcare programs.</p>
+          </details>
+          <details>
+            <summary>How can I increase my take-home pay?</summary>
+            <p>You can adjust your W-4 withholdings to match your actual tax liability, or reduce pre-tax deductions (though this increases your taxable income).</p>
+          </details>
+          <details>
+            <summary>Do all states have an income tax?</summary>
+            <p>No. Nine states currently have no state income tax on wages: Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington, and Wyoming.</p>
+          </details>
+          <details>
+            <summary>What is the standard deduction?</summary>
+            <p>The standard deduction reduces your taxable income. For 2026, it is $16,100 for Single filers and $32,200 for Married Filing Jointly.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .alt-bg {
+    background: var(--soft);
+    border-top: 1px solid var(--line);
+  }
+
+  .table-container h2 {
+    margin-bottom: 12px;
+  }
+  .table-container p {
+    margin-bottom: 24px;
+    color: var(--muted);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    background: var(--panel);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+
+  th, td {
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+  }
+
+  th {
+    background: var(--soft);
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td strong {
+    color: var(--ink);
+  }
+
+  .action-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--line);
+  }
+  
+  .action-card:hover {
+    border-color: var(--ink);
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--soft);
+    color: var(--ink);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .action-card h3 {
+    margin-bottom: 8px;
+  }
+
+  .action-card p {
+    flex-grow: 1;
+    margin-bottom: 24px;
+  }
+
+  .card-link {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .guide-header { text-align: center; margin-bottom: 40px; }
+  .guide-header h2 { margin-bottom: 12px; }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 64px;
+  }
+  .step-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 32px 24px;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .step-num {
+    width: 48px;
+    height: 48px;
+    background: var(--soft);
+    color: var(--ink);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: inherit;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .step-card h3 { margin-bottom: 12px; }
+  .step-card p { color: var(--muted); font-size: 0.95rem; }
+
+  .glossary-section { margin-bottom: 64px; }
+  .glossary-section h3 { margin-bottom: 24px; font-size: 1.5rem; text-align: center; }
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .glossary-grid div {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 20px;
+    border-radius: 8px;
+  }
+  .glossary-grid strong {
+    display: block;
+    color: var(--ink);
+    font-size: 1.2rem;
+    font-family: inherit;
+    margin-bottom: 6px;
+  }
+  .glossary-grid p { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+  .faq-section h3 { margin-bottom: 24px; font-size: 1.5rem; text-align: center; }
+  .faq { display: grid; gap: 12px; max-width: 800px; margin: 0 auto; }
+
+  @media print {
+    .faq-section {
+      display: none !important;
+    }
+    .glossary-grid {
+      display: block !important;
+    }
+    .glossary-grid div {
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+  }
+</style>

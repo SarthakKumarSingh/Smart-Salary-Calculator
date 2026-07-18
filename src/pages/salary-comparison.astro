@@ -1,0 +1,311 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { stateOptions } from '../data/states.js';
+
+const title = 'Compare Take-Home Pay Across States | Smart Salary Calculator';
+const description = 'Compare your take-home pay side by side in two different US states. See how state income tax differences affect your paycheck.';
+const optionsJson = JSON.stringify(stateOptions);
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="hero hero-sm">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Unique tool — not available on ADP or SmartAsset</p>
+        <h1>Compare take-home pay<br/>across states</h1>
+        <p>Relocating? See exactly how much more (or less) you'll take home in a different state — same salary, different taxes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool-shell" id="comparison-tool" aria-labelledby="compare-title">
+    <div class="tool-heading">
+      <h2 id="compare-title">Side-by-side state comparison</h2>
+      <p>Enter your salary once, then pick two states. We'll calculate the tax difference for you.</p>
+    </div>
+
+    <div class="compare-inputs panel" id="compare-form">
+      <div class="field-row">
+        <label>
+          Annual salary
+          <input id="cmp-salary" type="number" min="0" step="1000" value="85000" inputmode="decimal" />
+        </label>
+        <label>
+          Filing status
+          <select id="cmp-status">
+            <option value="single">Single</option>
+            <option value="married">Married filing jointly</option>
+            <option value="head">Head of household</option>
+          </select>
+        </label>
+      </div>
+      <div class="field-row">
+        <label>
+          State A
+          <select id="cmp-state-a">
+            {stateOptions.map((s) => (
+              <option value={s.abbr} selected={s.abbr === 'CA'}>{s.name}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          State B
+          <select id="cmp-state-b">
+            {stateOptions.map((s) => (
+              <option value={s.abbr} selected={s.abbr === 'TX'}>{s.name}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="panel compare-card" id="card-a">
+        <h3 id="card-a-name">California</h3>
+        <div class="compare-net">
+          <p class="eyebrow">Annual take-home</p>
+          <output id="card-a-net" class="net-pay">$0</output>
+        </div>
+        <div class="summary-list">
+          <div><span>Gross salary</span><strong id="card-a-gross">$0</strong></div>
+          <div><span>Federal tax</span><strong id="card-a-fed">$0</strong></div>
+          <div><span>FICA (SS + Medicare)</span><strong id="card-a-fica">$0</strong></div>
+          <div><span>State tax</span><strong id="card-a-state">$0</strong></div>
+          <div><span>Effective total rate</span><strong id="card-a-rate">0%</strong></div>
+        </div>
+      </div>
+
+      <div class="compare-diff panel" id="diff-panel">
+        <div class="diff-arrow" id="diff-arrow">→</div>
+        <div class="diff-amount" id="diff-amount">$0</div>
+        <div class="diff-label" id="diff-label">difference per year</div>
+      </div>
+
+      <div class="panel compare-card" id="card-b">
+        <h3 id="card-b-name">Texas</h3>
+        <div class="compare-net">
+          <p class="eyebrow">Annual take-home</p>
+          <output id="card-b-net" class="net-pay">$0</output>
+        </div>
+        <div class="summary-list">
+          <div><span>Gross salary</span><strong id="card-b-gross">$0</strong></div>
+          <div><span>Federal tax</span><strong id="card-b-fed">$0</strong></div>
+          <div><span>FICA (SS + Medicare)</span><strong id="card-b-fica">$0</strong></div>
+          <div><span>State tax</span><strong id="card-b-state">$0</strong></div>
+          <div><span>Effective total rate</span><strong id="card-b-rate">0%</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-cta">
+      <a class="dark-cta-button" href="/">
+        Use the Main Calculator
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-sm {
+    min-height: 380px;
+    padding: 64px 0 80px;
+  }
+
+  .compare-inputs {
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .compare-card {
+    padding: 28px;
+  }
+
+  .compare-card h3 {
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+  }
+
+  .compare-net {
+    text-align: center;
+    padding: 16px 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .compare-diff {
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    text-align: center;
+    min-width: 160px;
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+
+  .diff-arrow {
+    font-size: 2rem;
+    color: var(--green);
+    font-weight: 800;
+  }
+
+  .diff-amount {
+    font-size: 1.5rem;
+    font-weight: 850;
+    color: var(--green-dark);
+    font-family: 'DM Sans', sans-serif;
+    margin: 8px 0 4px;
+  }
+
+  .diff-label {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .compare-cta {
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .compare-cta .dark-cta-button {
+    background: var(--accent);
+    color: #fff;
+    padding: 16px 40px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  .compare-cta .dark-cta-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 860px) {
+    .compare-grid {
+      grid-template-columns: 1fr;
+    }
+    .compare-diff {
+      flex-direction: row;
+      gap: 12px;
+    }
+    .diff-arrow {
+      transform: rotate(90deg);
+    }
+  }
+</style>
+
+<script define:vars={{ optionsJson }}>
+  const states = JSON.parse(optionsJson);
+  const byAbbr = Object.fromEntries(states.map((s) => [s.abbr, s]));
+
+  const stdDed = { single: 16100, married: 32200, head: 24150 };
+  const fedBrackets = {
+    single: [[12400,0.10],[50400,0.12],[105700,0.22],[201775,0.24],[256225,0.32],[640600,0.35],[Infinity,0.37]],
+    married: [[24800,0.10],[100800,0.12],[211400,0.22],[403550,0.24],[512450,0.32],[768700,0.35],[Infinity,0.37]],
+    head: [[17700,0.10],[67450,0.12],[105700,0.22],[201750,0.24],[256200,0.32],[640600,0.35],[Infinity,0.37]],
+  };
+
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const money = (v) => fmt.format(Math.max(0, Number.isFinite(v) ? v : 0));
+  const pct = (v) => (v * 100).toFixed(1) + '%';
+
+  function progTax(income, brkts) {
+    let tax = 0, last = 0;
+    for (const [limit, rate] of brkts) {
+      if (income <= last) break;
+      tax += (Math.min(income, limit) - last) * rate;
+      last = limit;
+    }
+    return tax;
+  }
+
+  function calcState(salary, status, abbr) {
+    const sel = byAbbr[abbr] || byAbbr.TX;
+    const taxableFed = Math.max(0, salary - stdDed[status]);
+    const fed = progTax(taxableFed, fedBrackets[status]);
+    const ss = Math.min(salary, 184500) * 0.062;
+    const med = salary * 0.0145 + Math.max(0, salary - 200000) * 0.009;
+    let stateTax = 0;
+    if (sel.brackets && sel.brackets.length > 0) {
+      const sd = sel.stdDeduction || 0;
+      stateTax = progTax(Math.max(0, salary - sd), sel.brackets);
+    }
+    const total = fed + ss + med + stateTax;
+    return { fed, ss, med, fica: ss + med, stateTax, total, net: salary - total, name: sel.name };
+  }
+
+  function compare() {
+    const salary = Number(document.getElementById('cmp-salary').value || 0);
+    const status = document.getElementById('cmp-status').value;
+    const abbrA = document.getElementById('cmp-state-a').value;
+    const abbrB = document.getElementById('cmp-state-b').value;
+
+    const a = calcState(salary, status, abbrA);
+    const b = calcState(salary, status, abbrB);
+
+    // Card A
+    document.getElementById('card-a-name').textContent = a.name;
+    document.getElementById('card-a-net').textContent = money(a.net);
+    document.getElementById('card-a-gross').textContent = money(salary);
+    document.getElementById('card-a-fed').textContent = money(a.fed);
+    document.getElementById('card-a-fica').textContent = money(a.fica);
+    document.getElementById('card-a-state').textContent = money(a.stateTax);
+    document.getElementById('card-a-rate').textContent = salary > 0 ? pct(a.total / salary) : '0%';
+
+    // Card B
+    document.getElementById('card-b-name').textContent = b.name;
+    document.getElementById('card-b-net').textContent = money(b.net);
+    document.getElementById('card-b-gross').textContent = money(salary);
+    document.getElementById('card-b-fed').textContent = money(b.fed);
+    document.getElementById('card-b-fica').textContent = money(b.fica);
+    document.getElementById('card-b-state').textContent = money(b.stateTax);
+    document.getElementById('card-b-rate').textContent = salary > 0 ? pct(b.total / salary) : '0%';
+
+    // Diff
+    const diff = b.net - a.net;
+    const arrow = document.getElementById('diff-arrow');
+    const amt = document.getElementById('diff-amount');
+    const label = document.getElementById('diff-label');
+    if (diff > 0) {
+      arrow.textContent = '→';
+      amt.textContent = '+' + money(diff);
+      amt.style.color = 'var(--green-dark)';
+      label.textContent = `more per year in ${b.name}`;
+    } else if (diff < 0) {
+      arrow.textContent = '←';
+      amt.textContent = money(Math.abs(diff));
+      amt.style.color = '#c0392b';
+      label.textContent = `more per year in ${a.name}`;
+    } else {
+      arrow.textContent = '=';
+      amt.textContent = '$0';
+      amt.style.color = 'var(--muted)';
+      label.textContent = 'no difference';
+    }
+  }
+
+  document.getElementById('cmp-salary')?.addEventListener('input', compare);
+  document.getElementById('cmp-status')?.addEventListener('change', compare);
+  document.getElementById('cmp-state-a')?.addEventListener('change', compare);
+  document.getElementById('cmp-state-b')?.addEventListener('change', compare);
+  compare();
+</script>

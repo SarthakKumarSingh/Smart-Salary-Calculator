@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'FAQ - 2026 US Paycheck Calculator | Smart Salary Calculator';
+const description = 'Frequently asked questions about calculating take-home pay, federal income tax, FICA, pre-tax deductions, and state tax.';
+
+// Schema.org FAQ markup
+const faqs = [
+  {
+    question: "What is gross pay vs. net pay?",
+    answer: "Gross pay is the total amount you earn before any taxes or deductions are taken out. Net pay (take-home pay) is the amount you actually receive in your bank account after federal taxes, state taxes, FICA (Social Security and Medicare), and other deductions are subtracted."
+  },
+  {
+    question: "How is my federal income tax calculated?",
+    answer: "Federal income tax is calculated using a progressive tax bracket system. This means your income is divided into chunks, and each chunk is taxed at a different rate (from 10% up to 37%). You only pay the higher rate on the income that falls into that specific bracket, not your entire income."
+  },
+  {
+    question: "What is FICA?",
+    answer: "FICA stands for the Federal Insurance Contributions Act. It's a mandatory payroll tax consisting of two parts: Social Security (6.2% on income up to $184,500 for 2026) and Medicare (1.45% on all income, plus an additional 0.9% on income over $200,000 for single filers)."
+  },
+  {
+    question: "What are pre-tax deductions?",
+    answer: "Pre-tax deductions are amounts taken out of your gross pay before taxes are calculated. Common examples include 401(k) contributions, Health Savings Account (HSA) contributions, Flexible Spending Accounts (FSA), and health insurance premiums. These deductions lower your taxable income, saving you money on taxes."
+  },
+  {
+    question: "How do standard deductions work?",
+    answer: "The standard deduction is a specific dollar amount that reduces the income on which you're taxed. For 2026, the federal standard deduction is $16,100 for single filers and $32,200 for married couples filing jointly. You subtract this amount from your income before calculating federal taxes."
+  },
+  {
+    question: "Why is my actual paycheck slightly different from this calculator?",
+    answer: "While this calculator uses accurate 2026 IRS tax brackets and state rates, your actual paycheck may vary slightly due to local/city taxes (like in NYC or Ohio), specific W-4 allowances or additional withholding you requested, bonus taxation rules, or complex post-tax benefit deductions unique to your employer."
+  },
+  {
+    question: "Which states have no state income tax?",
+    answer: "There are currently 9 states with no state income tax on wages: Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington, and Wyoming."
+  }
+];
+
+const schemaOrg = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": `<p>${faq.answer}</p>`
+    }
+  }))
+};
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <Fragment slot="head" set:html={`<script type="application/ld+json">${JSON.stringify(schemaOrg)}</script>`} />
+  <section class="content-band" aria-labelledby="faq-title">
+    <div class="tool-heading">
+      <p class="eyebrow">Questions & Answers</p>
+      <h1 id="faq-title">Frequently Asked Questions</h1>
+      <p>Everything you need to know about how your take-home pay is calculated.</p>
+    </div>
+
+    <div class="faq">
+      {faqs.map((faq) => (
+        <details>
+          <summary>{faq.question}</summary>
+          <p>{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+    
+    <div class="cta-box">
+      <h3>Ready to estimate your paycheck?</h3>
+      <a href="/calculator" class="button">Go to Calculator</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cta-box {
+    margin-top: 64px;
+    padding: 32px;
+    background: var(--green-light);
+    border-radius: var(--radius);
+    text-align: center;
+    border: 1px solid var(--green);
+  }
+  .cta-box h3 {
+    color: var(--green-dark);
+    margin-bottom: 16px;
+  }
+</style>

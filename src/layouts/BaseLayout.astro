@@ -1,0 +1,892 @@
+---
+const {
+  title = 'Smart Salary Calculator - 2026 US Take Home Pay Calculator',
+  description = 'Free 2026 US paycheck calculator. Estimate take-home pay after federal, FICA, state taxes & deductions for all 50 states.',
+  canonical = Astro.url.href,
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Smart Salary Calculator" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://smartsalarycalculator.com/og-image.png" />
+    <meta property="og:image" content="https://smartsalarycalculator.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <slot name="head" />
+    <!-- System fonts only — zero network requests, zero buffering -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Smart Salary Calculator',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Any',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: description,
+      url: canonical,
+    })} />
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-N7D0VTEFZE"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      // Only enable if consent is granted
+      if (localStorage.getItem('cookieConsent') === 'accepted') {
+        gtag('config', 'G-N7D0VTEFZE');
+      } else {
+        gtag('config', 'G-N7D0VTEFZE', { 'send_page_view': false });
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Quantum Animated Background -->
+    <div class="quantum-bg" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <!-- Noise overlay for premium texture -->
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Smart Salary Calculator
+        </a>
+        <nav class="nav-desktop" aria-label="Primary navigation">
+          <a href="/states" class:list={[{active: currentPath === '/states' || currentPath === '/states/'}]}>States</a>
+          <a href="/salary-comparison" class:list={[{active: currentPath.includes('salary-comparison')}]}>Compare</a>
+          <a href="/tax-guide" class:list={[{active: currentPath.includes('tax-guide')}]}>Tax Guide</a>
+          <a href="/faq" class:list={[{active: currentPath === '/faq' || currentPath === '/faq/'}]}>FAQ</a>
+          <button id="theme-toggle" aria-label="Toggle dark mode">
+            <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </nav>
+        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile nav drawer -->
+    <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
+      <div class="mobile-nav-inner">
+        <button id="mobile-close-btn" class="mobile-close" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <nav aria-label="Mobile navigation">
+          <a href="/">Home</a>
+          <a href="/states">States</a>
+          <a href="/salary-comparison">Compare States</a>
+          <a href="/tax-guide">Tax Guide</a>
+          <a href="/faq">FAQ</a>
+          <a href="/about">About</a>
+        </nav>
+        <button id="mobile-theme-btn" class="mobile-theme-btn">Switch to Dark Theme</button>
+      </div>
+    </div>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <h4>Smart Salary Calculator</h4>
+            <p>Free 2026 paycheck calculator for all 50 US states. Estimate take-home pay after federal, state, and FICA taxes.</p>
+          </div>
+          <div class="footer-col">
+            <h4>Tools</h4>
+            <ul>
+              <li><a href="/">Paycheck Calculator</a></li>
+              <li><a href="/salary-comparison">State Comparison</a></li>
+              <li><a href="/states">Browse All States</a></li>
+              <li><a href="/paycheck-calculator/california">California Tax Calculator</a></li>
+              <li><a href="/paycheck-calculator/texas">Texas Tax Calculator</a></li>
+              <li><a href="/paycheck-calculator/new-york">New York Tax Calculator</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Learn</h4>
+            <ul>
+              <li><a href="/tax-guide">Tax Guide</a></li>
+              <li><a href="/faq">FAQ</a></li>
+              <li><a href="/about">About Us</a></li>
+              <li><a href="/contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Legal & Sources</h4>
+            <ul>
+              <li><a href="/privacy">Privacy Policy</a></li>
+              <li><a href="/terms">Terms & Conditions</a></li>
+              <li><a href="https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill" rel="noopener noreferrer" target="_blank">IRS 2026 Brackets</a></li>
+              <li><a href="https://www.irs.gov/taxtopics/tc751" rel="noopener noreferrer" target="_blank">IRS FICA Topic</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Smart Salary Calculator. Educational estimates only — not tax, legal, or financial advice.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" class="cookie-banner" aria-hidden="true" style="display: none;">
+      <p>We use cookies to improve your experience and for analytics. By continuing to use this site, you agree to our use of cookies.</p>
+      <div class="cookie-actions">
+        <button id="accept-cookies" class="button">Accept</button>
+        <button id="decline-cookies" class="button secondary">Decline</button>
+      </div>
+    </div>
+
+    <script>
+      // Theme toggle logic
+      const themeToggle = document.getElementById('theme-toggle');
+      const mobileThemeBtn = document.getElementById('mobile-theme-btn');
+      const sunIcon = document.querySelector('#theme-toggle .sun');
+      const moonIcon = document.querySelector('#theme-toggle .moon');
+
+      const applyTheme = (theme) => {
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          if (sunIcon && moonIcon) {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+          }
+          if (mobileThemeBtn) mobileThemeBtn.textContent = 'Switch to Light Theme';
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+          if (sunIcon && moonIcon) {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+          }
+          if (mobileThemeBtn) mobileThemeBtn.textContent = 'Switch to Dark Theme';
+        }
+        localStorage.setItem('theme', theme);
+      };
+
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme('dark');
+      }
+
+      const toggleTheme = () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      };
+
+      themeToggle?.addEventListener('click', toggleTheme);
+      mobileThemeBtn?.addEventListener('click', toggleTheme);
+
+      // Mobile menu
+      const mobileNav = document.getElementById("mobile-nav");
+      const menuBtn = document.getElementById("mobile-menu-btn");
+      const closeBtn = document.getElementById("mobile-close-btn");
+
+      menuBtn?.addEventListener("click", () => {
+        mobileNav?.classList.add("open");
+        menuBtn.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+      });
+
+      const closeMobileMenu = () => {
+        mobileNav?.classList.remove("open");
+        menuBtn?.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+      };
+
+      closeBtn?.addEventListener("click", closeMobileMenu);
+      mobileNav?.addEventListener("click", (e) => {
+        if (e.target === mobileNav) closeMobileMenu();
+      });
+
+      // Cookie Consent Logic
+      const cookieBanner = document.getElementById('cookie-banner');
+      const acceptBtn = document.getElementById('accept-cookies');
+      const declineBtn = document.getElementById('decline-cookies');
+
+      if (!localStorage.getItem('cookieConsent')) {
+        cookieBanner.style.display = 'flex';
+        cookieBanner.removeAttribute('aria-hidden');
+      }
+
+      const handleConsent = (status) => {
+        localStorage.setItem('cookieConsent', status);
+        cookieBanner.style.display = 'none';
+        cookieBanner.setAttribute('aria-hidden', 'true');
+        if (status === 'accepted' && typeof gtag === 'function') {
+          gtag('config', 'G-N7D0VTEFZE', { 'send_page_view': true });
+        }
+      };
+
+      acceptBtn?.addEventListener('click', () => handleConsent('accepted'));
+      declineBtn?.addEventListener('click', () => handleConsent('declined'));
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* ─── Design Tokens ─── */
+  :root {
+    color-scheme: light;
+    --bg: #F8F9FA;
+    --panel: #FFFFFF;
+    --ink: #333333;
+    --muted: #6c757d;
+    --line: rgba(0, 0, 0, 0.08);
+    --accent: #A84B2B;
+    --soft: #f1f3f5;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.03);
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --radius: 8px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --panel-glass: rgba(255, 255, 255, 0.7);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+    --bg: #09090b;
+    --panel: #18181b;
+    --ink: #f4f4f5;
+    --muted: #a1a1aa;
+    --line: rgba(255, 255, 255, 0.08);
+    --soft: #27272a;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 8px 10px -6px rgba(0, 0, 0, 0.8);
+    --panel-glass: rgba(24, 24, 27, 0.75);
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius);
+  }
+  .table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Ensure table doesn't squish too much on mobile */
+  }
+  .table-wrapper th {
+    position: sticky;
+    top: 0;
+    background: var(--panel);
+    z-index: 10;
+  }
+  
+  /* Touch Targets for Mobile */
+  @media (max-width: 768px) {
+    input[type="number"], 
+    input[type="text"], 
+    select, 
+    button {
+      min-height: 48px !important;
+    }
+  }
+
+  .quantum-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme='dark'] .orb {
+    opacity: 0.15;
+    filter: blur(120px);
+  }
+  .orb-1 {
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(168,75,43,0.4) 0%, rgba(168,75,43,0) 70%);
+    top: -10vw;
+    left: -10vw;
+    animation-duration: 25s;
+  }
+  .orb-2 {
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(43,75,168,0.3) 0%, rgba(43,75,168,0) 70%);
+    bottom: -10vw;
+    right: -10vw;
+    animation-duration: 22s;
+    animation-delay: -5s;
+  }
+  .orb-3 {
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle, rgba(168,43,126,0.3) 0%, rgba(168,43,126,0) 70%);
+    top: 40vh;
+    left: 30vw;
+    animation-duration: 28s;
+    animation-delay: -10s;
+  }
+
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(5vw, 10vh) scale(1.1); }
+    100% { transform: translate(-10vw, 5vh) scale(0.9); }
+  }
+
+  body {
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Noise overlay ─── */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px;
+  }
+
+  /* ─── Header ─── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    transition: background var(--transition);
+  }
+
+  .header-inner {
+    width: min(1160px, calc(100% - 32px));
+    margin: 0 auto;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: color var(--transition);
+  }
+  .brand:hover { color: var(--accent); }
+
+  .nav-desktop {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .nav-desktop a {
+    text-decoration: none;
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+  }
+  .nav-desktop a:hover, .nav-desktop a.active {
+    color: var(--ink);
+    background: var(--soft);
+  }
+  #theme-toggle {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-left: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  #theme-toggle:hover {
+    color: var(--ink);
+    background: var(--soft);
+    border-color: var(--muted);
+    transform: rotate(15deg) scale(1.1);
+  }
+
+  .mobile-menu-btn {
+    display: none;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  /* ─── Mobile nav drawer ─── */
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  .mobile-nav.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .mobile-nav-inner {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
+    background: var(--panel);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .mobile-nav.open .mobile-nav-inner {
+    transform: translateX(0);
+  }
+  .mobile-close {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+  }
+  .mobile-nav nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 16px;
+  }
+  .mobile-nav nav a {
+    text-decoration: none;
+    color: var(--ink);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    transition: background var(--transition);
+  }
+  .mobile-nav nav a:hover {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+  .mobile-theme-btn {
+    margin-top: auto;
+    padding: 12px;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink);
+  }
+
+  /* ─── Typography ─── */
+  h1, h2, h3, h4 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    font-weight: 700;
+  }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); }
+  h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1rem; }
+  p { line-height: 1.7; }
+  a { color: inherit; }
+
+  .eyebrow {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ─── Layout containers ─── */
+  .hero-inner, .content-band, .state-page {
+    width: min(1160px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 540px;
+    display: grid;
+    align-items: center;
+    padding: 80px 0 100px;
+    background: transparent;
+    color: var(--ink);
+  }
+  .hero-copy { max-width: 750px; position: relative; z-index: 1; }
+  .hero h1 {
+    /* Removed accent strip */
+  }
+  @media (max-width: 768px) {
+    .hero h1 { margin-left: 0; padding-left: 0; border-width: 0; }
+  }
+  .hero p { font-size: 1.15rem; color: var(--muted); max-width: 600px; margin-top: 24px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 52px;
+    padding: 0 28px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all var(--transition);
+    cursor: pointer;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--panel);
+  }
+  .button:hover {
+    background: var(--panel);
+    color: var(--ink);
+  }
+  .button.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .button.secondary:hover {
+    background: var(--panel);
+    border-color: var(--ink);
+  }
+
+  /* ─── Trust Row ─── */
+  .trust-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border-block: 1px solid var(--line);
+  }
+  .trust-row div {
+    background: var(--panel);
+    padding: 20px clamp(16px, 3vw, 32px);
+  }
+  .trust-row strong {
+    display: block;
+    color: var(--ink);
+    font-size: 1.4rem;
+    font-family: inherit;
+  }
+  .trust-row span { color: var(--muted); font-size: 0.92rem; }
+
+  /* ─── Tool Shell / Calculator ─── */
+  .tool-shell, .content-band, .state-page { padding: 64px 0; }
+  .tool-shell {
+    width: min(1160px, calc(100% - 32px));
+    margin: -48px auto 0;
+    position: relative;
+    z-index: 2;
+  }
+  .tool-heading { max-width: 700px; margin-bottom: 20px; }
+  .tool-heading p, .content-band > p, .state-page > p { color: var(--muted); }
+
+  .calculator-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .panel, .content-card {
+    background: var(--panel-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), border-color var(--transition), background var(--transition);
+  }
+
+  .calculator-form { padding: 24px; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  label {
+    display: grid;
+    gap: 5px;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.88rem;
+  }
+
+  input, select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0 12px;
+    color: var(--ink);
+    background: var(--soft);
+    font: inherit;
+    font-size: 0.95rem;
+    transition: all var(--transition);
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(26,122,85,0.12);
+    background: var(--panel);
+  }
+
+  .results-card {
+    padding: 24px;
+    position: relative;
+  }
+  .net-pay {
+    display: block;
+    color: var(--green-dark);
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    line-height: 1;
+    font-weight: 850;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .muted, .note { color: var(--muted); }
+
+  .summary-list { display: grid; gap: 10px; margin: 20px 0; }
+  .summary-list div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.92rem;
+  }
+  .summary-list span { color: var(--muted); }
+  .note { margin: 0; font-size: 0.85rem; }
+
+  /* ─── Content ─── */
+  .content-band { padding: 64px 0; }
+  .article-grid, .state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .content-card { padding: 24px; box-shadow: var(--shadow-sm); transition: all var(--transition); }
+  .content-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .content-card p { color: var(--muted); margin-bottom: 0; }
+
+  /* ─── State grid ─── */
+  .state-grid a {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-weight: 700;
+    transition: all var(--transition);
+  }
+  .state-grid a:hover {
+    border-color: var(--green);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+  .state-grid span { color: var(--muted); font-weight: 600; font-size: 0.9rem; }
+
+  /* ─── FAQ ─── */
+  .faq { display: grid; gap: 12px; margin-top: 24px; }
+  details {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: all var(--transition);
+  }
+  details[open] { box-shadow: var(--shadow-sm); }
+  summary { cursor: pointer; font-weight: 750; font-size: 0.98rem; }
+  details p { color: var(--muted); margin-top: 10px; margin-bottom: 0; }
+
+  /* ─── Footer ─── */
+  .site-footer {
+    background: var(--soft);
+    border-top: 1px solid var(--line);
+    margin-top: 48px;
+  }
+  .footer-inner {
+    width: min(1160px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 48px 0 32px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+  .footer-col h4 {
+    margin-bottom: 12px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 1.4rem;
+  }
+  .footer-col p { color: var(--muted); font-size: 0.9rem; }
+  .footer-col ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footer-col a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    transition: color var(--transition);
+  }
+  .footer-col a:hover { color: var(--green-dark); }
+  .footer-bottom {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+  }
+  .footer-bottom p { color: var(--muted); font-size: 0.82rem; text-align: center; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 860px) {
+    .nav-desktop { display: none; }
+    .mobile-menu-btn { display: flex; }
+
+    .hero { min-height: 480px; padding: 60px 0 80px; }
+    .calculator-grid, .field-row { grid-template-columns: 1fr; }
+    .tool-shell { margin-top: -36px; }
+    .results-card { position: static; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .article-grid, .state-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 500px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .trust-row { grid-template-columns: 1fr; }
+  }
+
+  /* ─── Print ─── */
+  @media print {
+    .site-header, .site-footer, .noise-overlay, .mobile-nav,
+    .hero-actions, .eyebrow, #theme-toggle, .mobile-menu-btn, .cookie-banner { display: none !important; }
+    body { background: #fff; color: #000; padding-top: 0; }
+    .calculator-grid { grid-template-columns: 1fr !important; }
+    .results-card { position: static !important; box-shadow: none !important; border: 2px solid #000 !important; }
+    /* Prevent logical blocks from splitting across pages */
+    .content-card, .panel, .calculator-form, table, tr, .trust-row div { page-break-inside: avoid; break-inside: avoid; }
+    /* Ensure headings stay with their content (no orphaned headings at the bottom of a page) */
+    h1, h2, h3, h4, .eyebrow { page-break-after: avoid; break-after: avoid; }
+    /* Only force major sections to start on a new page if absolutely necessary, but generally avoid forced breaks */
+    .tool-shell { page-break-before: always; break-before: page; }
+  }
+
+  /* ─── Cookie Banner ─── */
+  .cookie-banner {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    max-width: 600px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  @media (min-width: 650px) {
+    .cookie-banner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+  .cookie-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+</style>

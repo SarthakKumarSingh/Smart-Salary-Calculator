@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'About Us - Smart Salary Calculator';
+const description = 'Learn more about the team behind Smart Salary Calculator and our mission to provide accurate, transparent 2026 tax and paycheck estimates.';
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="content-band" aria-labelledby="about-title">
+    <div class="tool-heading">
+      <p class="eyebrow">Our Mission</p>
+      <h1 id="about-title">About Smart Salary Calculator</h1>
+    </div>
+    
+    <div class="article-layout">
+      <div class="prose">
+        <h2>Why We Built This</h2>
+        <p>Taxes are complicated, and understanding exactly how much money you will take home from your paycheck shouldn't require a degree in accounting. We built <strong>Smart Salary Calculator</strong> to provide a fast, privacy-focused, and highly accurate tool to help Americans navigate the 2026 tax brackets.</p>
+        
+        <h2>Our Core Values</h2>
+        <ul>
+          <li><strong>Accuracy:</strong> We rigorously update our algorithms to reflect the latest IRS publications, standard deductions, and state tax legislations.</li>
+          <li><strong>Privacy First:</strong> Your financial data is deeply personal. That's why our calculator runs entirely in your web browser. Your salary is never sent to our servers.</li>
+          <li><strong>Transparency:</strong> We don't just give you a final number; we show you the exact breakdown of Federal, State, and FICA taxes so you understand where every dollar goes.</li>
+        </ul>
+
+        <div class="callout callout-blue">
+          <strong>Open Data:</strong> All of our calculations are based on publicly available data provided directly by the Internal Revenue Service (IRS) and state tax boards.
+        </div>
+
+        <h2>Who We Are</h2>
+        <p>We are a small team of developers, data enthusiasts, and personal finance advocates dedicated to building accessible financial tools. We realized that many existing salary calculators were either outdated, cluttered with intrusive ads, or lacked the granularity needed for accurate estimates.</p>
+        
+        <p>If you have found our tool helpful, or if you have suggestions for improvement, we would love to hear from you. Please feel free to <a href="/contact">contact us</a>.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .article-layout {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .prose {
+    padding: 32px 40px;
+    margin-top: 24px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    background: var(--soft);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    margin: 32px 0 16px;
+    color: var(--ink);
+  }
+
+  .prose h2:first-child {
+    margin-top: 0;
+  }
+
+  .prose p {
+    margin-bottom: 20px;
+  }
+
+  .prose ul {
+    margin-bottom: 24px;
+    padding-left: 24px;
+  }
+
+  .prose li {
+    margin-bottom: 8px;
+  }
+
+  .callout {
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin: 24px 0;
+    font-size: 0.95rem;
+  }
+
+  .callout-blue {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 4px solid #3b82f6;
+  }
+  
+  :root.dark .callout-blue {
+    border-color: #60a5fa;
+  }
+  
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .prose { padding: 24px 20px; }
+  }
+</style>

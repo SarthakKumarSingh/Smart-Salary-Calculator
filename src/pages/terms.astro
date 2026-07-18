@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Terms & Conditions - Smart Salary Calculator';
+const description = 'Read the terms and conditions for using the Smart Salary Calculator. Understand our usage policies and disclaimers.';
+---
+
+<BaseLayout title={title} description={description} canonical={Astro.url.href}>
+  <section class="content-band" aria-labelledby="terms-title">
+    <div class="tool-heading">
+      <p class="eyebrow">Legal</p>
+      <h1 id="terms-title">Terms & Conditions</h1>
+    </div>
+    
+    <div class="article-layout">
+      <div class="prose">
+        <p>Last updated: January 2026</p>
+        
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing and using Smart Salary Calculator, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by these terms, please do not use this service.</p>
+
+        <h2>2. Educational Purposes Only</h2>
+        <p>Smart Salary Calculator provides estimated tax and salary calculations for educational and informational purposes only. The results provided by our tools are <strong>not financial, legal, or tax advice</strong>. You should always consult with a certified CPA or tax professional before making financial decisions based on these estimates.</p>
+        
+        <div class="callout callout-blue">
+          <strong>Disclaimer of Liability:</strong> We make no representations, warranties, or guarantees, express or implied, regarding the accuracy or completeness of the calculations provided. Smart Salary Calculator is not liable for any financial losses or damages resulting from the use of this site.
+        </div>
+
+        <h2>3. Accuracy of Information</h2>
+        <p>While we strive to keep our tax brackets, standard deductions, and FICA rates as up-to-date as possible (currently utilizing 2026 IRS guidelines), tax laws change frequently and without notice. Local taxes, specific tax credits, or unique employer benefit deductions are not fully represented.</p>
+
+        <h2>4. User Privacy</h2>
+        <p>We respect your privacy. All calculations are performed locally in your web browser. We do not store, track, or transmit your salary inputs to any external servers. Please review our <a href="/privacy">Privacy Policy</a> for more details on how we handle website analytics and cookies.</p>
+
+        <h2>5. Modifications</h2>
+        <p>Smart Salary Calculator reserves the right to modify these Terms and Conditions at any time. We do so by posting and drawing attention to the updated terms on the Site. Your decision to continue to visit and make use of the Site after such changes have been made constitutes your formal acceptance of the new Terms and Conditions.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .article-layout {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .prose {
+    padding: 32px 40px;
+    margin-top: 24px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    background: var(--soft);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    margin: 32px 0 16px;
+    color: var(--ink);
+  }
+
+  .prose p {
+    margin-bottom: 20px;
+  }
+
+  .callout {
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin: 24px 0;
+    font-size: 0.95rem;
+  }
+
+  .callout-blue {
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 4px solid #3b82f6;
+  }
+  
+  :root.dark .callout-blue {
+    border-color: #60a5fa;
+  }
+  
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .prose { padding: 24px 20px; }
+  }
+</style>
