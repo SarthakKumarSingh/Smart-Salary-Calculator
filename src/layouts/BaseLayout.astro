@@ -56,16 +56,25 @@ const isPagesDev = Astro.url.hostname.includes('pages.dev');
     <meta name="theme-color" content="#FFFFFF" />
     <slot name="head" />
     <!-- System fonts only — zero network requests, zero buffering -->
-    <script type="application/ld+json" set:html={JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'Smart Salary Calculator',
-      applicationCategory: 'FinanceApplication',
-      operatingSystem: 'Any',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      description: description,
-      url: canonical,
-    })} />
+    <script type="application/ld+json" set:html={JSON.stringify([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Smart Salary Calculator',
+        alternateName: ['smartsalarycalculator', 'smartsalarycalculator.com', 'SmartSalaryCalculator'],
+        url: 'https://smartsalarycalculator.com/'
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'Smart Salary Calculator',
+        applicationCategory: 'FinanceApplication',
+        operatingSystem: 'Any',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        description: description,
+        url: canonical,
+      }
+    ])} />
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-N7D0VTEFZE"></script>
     <script is:inline>
